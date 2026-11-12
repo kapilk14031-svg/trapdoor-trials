@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#0b0f1a" />
+    <title>Trapdoor Trials</title>
+    <!-- Playables SDK MUST load before game code. -->
+    <script src="https://www.youtube.com/game_api/v1" onerror="window.__ytgameLoadFailed = true"></script>
+    <script type="module" crossorigin src="./assets/index-Br3ruqCS.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-BDklS9pO.css">
+  </head>
+  <body>
+    <div id="app">
+      <canvas id="game" aria-label="Trapdoor Trials game canvas"></canvas>
+
+      <div id="hud">
+        <div class="left">
+          <span id="hud-level">Level 1</span>
+          <span id="hud-name" class="lvlname">· Wake Up</span>
+          <span>Deaths <b id="hud-deaths">0</b></span>
+          <span>Time <b id="hud-time">0.0</b></span>
+        </div>
+        <div class="right">
+          <button class="iconbtn" id="btn-settings" title="Settings" aria-label="Settings">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4 7h16M4 12h16M4 17h16" />
+              <circle cx="9" cy="7" r="2.1" />
+              <circle cx="15" cy="12" r="2.1" />
+              <circle cx="8" cy="17" r="2.1" />
+            </svg>
+          </button>
+          <button class="iconbtn" id="btn-pause" title="Pause">II</button>
+        </div>
+      </div>
+
+      <div id="settings" aria-hidden="true">
+        <div class="sheet" role="dialog" aria-modal="true" aria-label="Settings">
+          <div class="sheet-head">
+            <h2>Settings</h2>
+            <button class="iconbtn" id="btn-settings-close" aria-label="Close settings">✕</button>
+          </div>
+
+          <button class="row" data-toggle="sfx" aria-pressed="true">
+            <span class="row-ico" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <path d="M4 9.5h3L11 6v12l-4-3.5H4z" />
+                <path d="M14.5 9.2a4 4 0 0 1 0 5.6" />
+                <path d="M17 7a7 7 0 0 1 0 10" />
+              </svg>
+            </span>
+            <span class="row-label">Sound</span>
+            <span class="sw" aria-hidden="true"><i></i></span>
+          </button>
+
+          <button class="row" data-toggle="music" aria-pressed="true">
+            <span class="row-ico" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <path d="M9 17V5l10-2v12" />
+                <circle cx="6.5" cy="17.5" r="2.5" />
+                <circle cx="16.5" cy="15.5" r="2.5" />
+              </svg>
+            </span>
+            <span class="row-label">Music</span>
+            <span class="sw" aria-hidden="true"><i></i></span>
+          </button>
+
+          <button class="row" data-toggle="haptics" aria-pressed="true">
+            <span class="row-ico" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <rect x="9" y="3" width="6" height="18" rx="1.6" />
+                <path d="M5.5 8.5a6 6 0 0 0 0 7" />
+                <path d="M18.5 8.5a6 6 0 0 1 0 7" />
+              </svg>
+            </span>
+            <span class="row-label">Vibration</span>
+            <span class="sw" aria-hidden="true"><i></i></span>
+          </button>
+
+          <p class="sheet-note">Vibration is Android-only — iPhone browsers don't support it.</p>
+        </div>
+      </div>
+
+      <div id="toast"></div>
+
+      <div id="touch">
+        <div class="pad">
+          <div class="tbtn" id="tleft">‹</div>
+          <div class="tbtn" id="tright">›</div>
+        </div>
+        <div class="tbtn" id="tjump">JUMP</div>
+      </div>
+
+      <div id="ui">
+        <section class="screen on" id="screen-loading">
+          <div class="kicker">Trapdoor Trials</div>
+          <h1>Loading<span class="accent">.</span></h1>
+        </section>
+
+        <section class="screen" id="screen-menu">
+          <div class="kicker">A tiny troll platformer</div>
+          <h1>Trapdoor<br /><span class="accent">Trials</span></h1>
+          <p class="sub">The floor is not your friend. Reach the door. Try not to take it personally.</p>
+          <div class="row">
+            <button class="btn" id="btn-play">Play</button>
+            <button class="btn ghost" id="btn-levels">Levels</button>
+          </div>
+          <div class="row toggles">
+            <button class="chip" data-toggle="sfx" aria-pressed="true">Sound</button>
+            <button class="chip" data-toggle="music" aria-pressed="true">Music</button>
+            <button class="chip" data-toggle="haptics" aria-pressed="true">Vibration</button>
+          </div>
+          <p class="fine">
+            <span class="kb-only">A / D or arrows to move · Space / W to jump · R to restart</span>
+            <span class="touch-only">Tap the on-screen buttons to move and jump</span>
+          </p>
+        </section>
+
+        <section class="screen" id="screen-levels">
+          <div class="kicker">Select a trial</div>
+          <div id="levels"></div>
+          <button class="btn ghost" id="btn-levels-back">Back</button>
+        </section>
+
+        <section class="screen" id="screen-pause">
+          <div class="kicker">Paused</div>
+          <h1>Take a breath</h1>
+          <div class="row">
+            <button class="btn" id="btn-resume">Resume</button>
+            <button class="btn ghost" id="btn-restart">Restart</button>
+            <button class="btn ghost" id="btn-quit">Levels</button>
+          </div>
+        </section>
+
+        <section class="screen" id="screen-dead">
+          <div class="kicker">That was rude</div>
+          <h1>Again<span class="accent">.</span></h1>
+          <p class="sub" id="dead-roast" style="min-height: 22px; color: var(--gold); font-weight: 600; font-size: 15px; margin: -4px 0 2px;"></p>
+          <p class="sub" id="dead-hint" style="display: none; color: #7ce0ff; font-weight: 600; font-size: 14px; margin: 2px 0 6px;"></p>
+          <div class="stat">
+            <div>Deaths<b id="dead-deaths">1</b></div>
+            <div>Level<b id="dead-level">1</b></div>
+          </div>
+          <div class="row">
+            <button class="btn" id="btn-retry">Retry</button>
+            <button class="btn ghost" id="btn-dead-levels">Levels</button>
+          </div>
+          <p class="fine" id="skip-wrap" style="display: none">
+            <button class="btn small ghost" id="btn-skip">Watch ad to skip this level</button>
+          </p>
+        </section>
+
+        <section class="screen" id="screen-clear">
+          <div class="kicker">Trial cleared</div>
+          <h1 id="clear-title">Nice<span class="accent">.</span></h1>
+          <div class="stat">
+            <div>Time<b id="clear-time">0.0s</b></div>
+            <div>Deaths<b id="clear-deaths">0</b></div>
+            <div>Best<b id="clear-best">—</b></div>
+          </div>
+          <div class="row">
+            <button class="btn" id="btn-next">Next trial</button>
+            <button class="btn ghost" id="btn-replay">Replay</button>
+          </div>
+        </section>
+
+        <section class="screen" id="screen-win">
+          <div class="kicker">All trials cleared</div>
+          <h1>You beat the<br /><span class="accent">house.</span></h1>
+          <p class="sub" id="win-sub">All trials cleared. That's the whole house.</p>
+          <div class="row">
+            <button class="btn" id="btn-win-levels">Levels</button>
+            <button class="btn ghost" id="btn-win-menu">Menu</button>
+          </div>
+        </section>
+      </div>
+    </div>
+  </body>
+</html>
